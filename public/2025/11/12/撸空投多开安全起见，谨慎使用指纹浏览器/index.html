@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G.Ark Blog</title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body>
+    <div class="container">
+        <div class="header">
+    <h1>💻 G.Ark Blog</h1>
+    <p>个人技术笔记与生活记录</p>
+    <nav class="main-nav">
+        <a href="/" class="nav-link">首页</a>
+        <a href="/archives" class="nav-link">归档</a>
+        <a href="/tags" class="nav-link">标签</a>
+        <a href="/categories" class="nav-link">分类</a>
+    </nav>
+</div>
+        <main class="main-content">
+            <article class="post">
+    <header class="post-header">
+        <h1 class="post-title">撸空投多开安全起见，谨慎使用指纹浏览器</h1>
+        <div class="post-meta">
+            <span class="post-time">📅 2025年11月12日</span>
+            
+        </div>
+    </header>
+    
+    <div class="post-content">
+        <h2 id="一、为什么要用多个独立-Chrome-实例（优点）"><a href="#一、为什么要用多个独立-Chrome-实例（优点）" class="headerlink" title="一、为什么要用多个独立 Chrome 实例（优点）"></a><strong>一、为什么要用多个独立 Chrome 实例（优点）</strong></h2><ul>
+<li>账号隔离：多个 Google &#x2F; Facebook &#x2F; Twitter 等账号互不干扰。</li>
+<li>独立 Cookie 与缓存：防止自动登录到错账户。</li>
+<li>降低指纹追踪风险：适用于营销、电商、广告推广场景。</li>
+<li>崩溃隔离：一个实例崩溃不会影响其它实例。</li>
+<li>提高工作效率：为不同任务建立不同配置（书签、扩展、插件）。</li>
+<li>独立代理：给不同实例使用不同 VPN &#x2F; IP。</li>
+<li>适合 Web3 &#x2F; 加密交易 &#x2F; DApp：多个钱包、账户隔离。</li>
+</ul>
+<hr>
+<h2 id="二、准备：在-D-盘（或任意盘）创建两个文件夹"><a href="#二、准备：在-D-盘（或任意盘）创建两个文件夹" class="headerlink" title="二、准备：在 D 盘（或任意盘）创建两个文件夹"></a><strong>二、准备：在 D 盘（或任意盘）创建两个文件夹</strong></h2><p>建议创建两个文件夹用于存放用户数据与快捷方式（也可放到其它盘）：</p>
+<ul>
+<li>D:\fenliulanqi2\Chrome_UserData （存放 Chrome 用户数据）</li>
+<li>D:\fenliulanqi2\Chrome_ShortCuts （存放生成的快捷方式）</li>
+</ul>
+<p>你可以在资源管理器中右键新建，也可以用 PowerShell 一次性创建：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">New-Item -ItemType Directory -Path &quot;D:\\fenliulanqi2\\Chrome_UserData&quot; -Force</span><br><span class="line">New-Item -ItemType Directory -Path &quot;D:\\fenliulanqi2\\Chrome_ShortCuts&quot; -Force</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、PowerShell-脚本（生成-10-个-Chrome-分身快捷方式）"><a href="#三、PowerShell-脚本（生成-10-个-Chrome-分身快捷方式）" class="headerlink" title="三、PowerShell 脚本（生成 10 个 Chrome 分身快捷方式）"></a><strong>三、PowerShell 脚本（生成 10 个 Chrome 分身快捷方式）</strong></h2><ol>
+<li>打开记事本（Win + R → notepad → 回车）。</li>
+<li>将下面脚本全部复制并粘贴到记事本中。</li>
+<li>保存为 D:\chrome.ps1（文件类型选择“所有文件 (<em>.</em>)”）。</li>
+</ol>
+<p>脚本（已修正路径拼接与引号，生成 1 到 10 共 10 个分身）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line"># Title: 自动生成多个具有独立环境的 Chrome 浏览器</span><br><span class="line"></span><br><span class="line"># Describe: d盘新建一个记事本文件，复制以下代码，保存为 chrome.ps1 ，</span><br><span class="line"></span><br><span class="line"># 菜单栏以管理员运行 PowerShell 运行，输入 d: 然后输入Set-ExecutionPolicy RemoteSigned 回车后获取权限输入y，</span><br><span class="line"></span><br><span class="line"># 输入命令 .\\chrome.ps1 即可</span><br><span class="line"></span><br><span class="line"># 先建立两个文件夹并复制其路径，替换以下两个路径</span><br><span class="line"></span><br><span class="line">$UserDataPath = &quot;D:\\fenliulanqi2\\Chrome_UserData&quot; # 存放 Chrome 用户数据</span><br><span class="line"></span><br><span class="line">$FilePath = &quot;D:\\fenliulanqi2\\Chrome_ShortCuts&quot;    # 存放快捷方式图标，从这个文件夹里打开浏览器分身</span><br><span class="line"></span><br><span class="line"># 右键打开你桌面上的 Chrome 浏览器快捷方式，复制“目标”一栏的内容，替换下方路径</span><br><span class="line"></span><br><span class="line"># （注意：只复制 C:\\Users\\....\\chrome.exe ，chrome.exe 后面的比如“--profile-directory”等字符不要复制）</span><br><span class="line"></span><br><span class="line">$TargetPath = &quot;C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&quot;</span><br><span class="line"></span><br><span class="line"># 复制 Chrome 浏览器快捷方式的“起始位置”一栏的内容，替换下方路径</span><br><span class="line"></span><br><span class="line">$WorkingDirectory = &quot;C:\\Program Files\\Google\\Chrome\\Application&quot;</span><br><span class="line"></span><br><span class="line"># 设置生成分身的数量（从1到10）</span><br><span class="line"></span><br><span class="line">$array = 1..10</span><br><span class="line"></span><br><span class="line">foreach ($n in $array)</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    $x = $n.ToString()</span><br><span class="line"></span><br><span class="line">    $ShortcutFile = $FilePath + &quot;\\Chrome_&quot; + $x + &quot;.lnk&quot; #</span><br><span class="line"></span><br><span class="line">    $WScriptShell = New-Object -ComObject WScript.Shell</span><br><span class="line"></span><br><span class="line">    $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)</span><br><span class="line"></span><br><span class="line">    $Shortcut.TargetPath = $TargetPath</span><br><span class="line"></span><br><span class="line">    $Shortcut.Arguments = &quot;--user-data-dir=&quot; + $UserDataPath + &quot;\\&quot; + $x</span><br><span class="line"></span><br><span class="line">    $Shortcut.WorkingDirectory = $WorkingDirectory</span><br><span class="line"></span><br><span class="line">    $Shortcut.Description = &quot;Chrome&quot; #备注，可以随便写</span><br><span class="line"></span><br><span class="line">    $Shortcut.Save()</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li>确认 $TargetPath 与 $WorkingDirectory 与你系统上的 Chrome 安装路径一致（右键桌面 Chrome 快捷方式可以复制“目标”与“起始位置”）。</li>
+<li>如果 Chrome 安装在 32 位 Program Files (x86) 下，请修改为对应路径。</li>
+</ul>
+<hr>
+<h2 id="四、保存并运行脚本（管理员权限）"><a href="#四、保存并运行脚本（管理员权限）" class="headerlink" title="四、保存并运行脚本（管理员权限）"></a><strong>四、保存并运行脚本（管理员权限）</strong></h2><ol>
+<li>以管理员权限运行 PowerShell &#x2F; Windows 终端：<ul>
+<li>按 Win + X → 选择 “Windows 终端（管理员）” 或 “PowerShell（管理员）”。</li>
+</ul>
+</li>
+<li>切换到 D 盘：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d:</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>允许执行本地脚本（只需执行一次）：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Set-ExecutionPolicy RemoteSigned</span><br><span class="line"># 如果提示：是否更改执行策略？ 回答 Y 并回车</span><br></pre></td></tr></table></figure>
+
+<p>（出于安全考虑，执行完脚本后你可以将执行策略改回默认，如：Set-ExecutionPolicy Restricted）</p>
+<ol>
+<li>运行脚本：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\\chrome.ps1</span><br></pre></td></tr></table></figure>
+
+<p>运行完成后，打开 D:\fenliulanqi2\Chrome_ShortCuts，你会看到 Chrome_1.lnk … Chrome_10.lnk 等 10 个快捷方式。</p>
+<hr>
+<h2 id="五、打开与使用"><a href="#五、打开与使用" class="headerlink" title="五、打开与使用"></a><strong>五、打开与使用</strong></h2><ul>
+<li>双击任意 Chrome_x.lnk（例如 Chrome_1.lnk）即可启动一个独立的 Chrome 实例，数据会存放在 D:\fenliulanqi2\Chrome_UserData&lt;编号&gt;。</li>
+<li>第一次启动某个分身时，Chrome 会像全新安装一样进行设置（也可以安装扩展或登录不同账号）。</li>
+</ul>
+<p>小提示：</p>
+<ul>
+<li>若不希望首次运行弹出欢迎页面，可在 Arguments 中追加参数：–no-first-run</li>
+<li>若希望指定每个分身的窗口大小&#x2F;位置或更多启动参数，可在 $Shortcut.Arguments 中追加对应参数。</li>
+</ul>
+<hr>
+<h2 id="六、代理与独立-IP-的使用建议"><a href="#六、代理与独立-IP-的使用建议" class="headerlink" title="六、代理与独立 IP 的使用建议"></a><strong>六、代理与独立 IP 的使用建议</strong></h2><ul>
+<li>建议在每个分身上安装代理切换扩展（如你提供的 Proxy Switcher 插件），以便为不同分身指定不同代理或节点。</li>
+<li>独立 IP 来源：<ul>
+<li>住宅 IP（成本高，但更接近真实用户环境）。</li>
+<li>商业 VPN &#x2F; 机场节点（性价比更高，节点选择更多）。</li>
+</ul>
+</li>
+<li>若用多节点建议使用 SOCKS5 方式并配合软路由（如 Passwall）暴露多个不同地区的 SOCKS 节点，然后在每个分身里配置对应代理扩展。</li>
+<li>注意合规与账号安全，不要滥用代理导致账号被封。</li>
+</ul>
+<hr>
+<h2 id="七、同步工具与资源"><a href="#七、同步工具与资源" class="headerlink" title="七、同步工具与资源"></a><strong>七、同步工具与资源</strong></h2><ul>
+<li>GitHub 项目（Chrome-Manager）：<a target="_blank" rel="noopener" href="https://github.com/devilflasher/Chrome-Manager">https://github.com/devilflasher/Chrome-Manager</a></li>
+<li>本地可运行工具（注意安全，建议自行从源码打包）：<a target="_blank" rel="noopener" href="https://jdssl.top/wp-content/uploads/2025/02/chrome_manager.zip">https://jdssl.top/wp-content/uploads/2025/02/chrome_manager.zip</a></li>
+</ul>
+<p>（建议优先从官方 &#x2F; GitHub 源码自行打包构建可执行文件，以避免安全风险）</p>
+<hr>
+<h2 id="八、常见问题与排查"><a href="#八、常见问题与排查" class="headerlink" title="八、常见问题与排查"></a><strong>八、常见问题与排查</strong></h2><ul>
+<li>没看到快捷方式：确认脚本路径、文件夹存在且你有写权限。可在 PowerShell 中手动查看：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Get-ChildItem &quot;D:\\fenliulanqi2\\Chrome_ShortCuts&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Chrome 报错“另一个 Chrome 正在运行”或 profile 被占用：确保每个分身使用不同的 user-data-dir；不要用同一 profile 同时多次启动。</li>
+<li>执行策略拒绝：以管理员身份运行 PowerShell 并执行 Set-ExecutionPolicy RemoteSigned。</li>
+</ul>
+
+    </div>
+</article>
+        </main>
+        <footer class="footer">
+    <div id="timeDate">载入天数...</div>
+    <p>
+        | &copy; 2025 G.Ark | 
+        <a href="/archives">归档</a>
+    </p>
+</footer>
+
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("2025-11-02 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        document.getElementById("timeDate").innerHTML = "稳定运行 "+dnum+" 天";
+    }
+    setInterval("createtime()",250);
+</script>
+    </div>
+    
+<script src="/js/main.js"></script>
+
+</body>
+</html>

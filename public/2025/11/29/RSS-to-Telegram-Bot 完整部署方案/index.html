@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G.Ark Blog</title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body>
+    <div class="container">
+        <div class="header">
+    <h1>💻 G.Ark Blog</h1>
+    <p>个人技术笔记与生活记录</p>
+    <nav class="main-nav">
+        <a href="/" class="nav-link">首页</a>
+        <a href="/archives" class="nav-link">归档</a>
+        <a href="/tags" class="nav-link">标签</a>
+        <a href="/categories" class="nav-link">分类</a>
+    </nav>
+</div>
+        <main class="main-content">
+            <article class="post">
+    <header class="post-header">
+        <h1 class="post-title">RSS-to-Telegram-Bot 完整部署方案</h1>
+        <div class="post-meta">
+            <span class="post-time">📅 2025年11月29日</span>
+            
+        </div>
+    </header>
+    
+    <div class="post-content">
+        <h3 id="1-系统要求"><a href="#1-系统要求" class="headerlink" title="1. 系统要求"></a>1. 系统要求</h3><ul>
+<li>VPS（Ubuntu&#x2F;CentOS等Linux系统）</li>
+<li>Docker &amp; Docker Compose</li>
+<li>Telegram Bot Token</li>
+</ul>
+<h3 id="2-快速部署命令"><a href="#2-快速部署命令" class="headerlink" title="2. 快速部署命令"></a>2. 快速部署命令</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 1. 克隆项目</span><br><span class="line">git clone https://github.com/Rongronggg9/RSS-to-Telegram-Bot.git</span><br><span class="line">cd RSS-to-Telegram-Bot</span><br><span class="line"></span><br><span class="line"># 2. 创建配置文件</span><br><span class="line">cp .env.sample .env</span><br><span class="line">cp docker-compose.yml.sample docker-compose.yml</span><br><span class="line"></span><br><span class="line"># 3. 创建数据目录</span><br><span class="line">mkdir -p data</span><br><span class="line"></span><br><span class="line"># 4. 编辑配置文件</span><br><span class="line">nano .env</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-环境配置文件-env"><a href="#3-环境配置文件-env" class="headerlink" title="3. 环境配置文件 (.env)"></a>3. 环境配置文件 (.env)</h3><p>env</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># Telegram Bot Token (从 @BotFather 获取)</span><br><span class="line">BOT_TOKEN=你的BotToken在这里</span><br><span class="line"></span><br><span class="line"># 管理模式 (单用户模式设置为 no)</span><br><span class="line">MULTI_USER=no</span><br><span class="line"></span><br><span class="line"># 管理员ID (你的Telegram用户ID，通过 @userinfobot 获取)</span><br><span class="line">ADMIN_ID=你的用户ID</span><br><span class="line"></span><br><span class="line"># 数据库路径</span><br><span class="line">DB_PATH=/app/data/rssbot.db</span><br><span class="line">DATA_DIR=/app/data</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-Docker-Compose-文件-docker-compose-yml"><a href="#4-Docker-Compose-文件-docker-compose-yml" class="headerlink" title="4. Docker Compose 文件 (docker-compose.yml)"></a>4. Docker Compose 文件 (docker-compose.yml)</h3><p>yaml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">services:</span><br><span class="line">  rss-bot:</span><br><span class="line">    build: .</span><br><span class="line">    container_name: rss-to-telegram-bot</span><br><span class="line">    restart: unless-stopped</span><br><span class="line">    env_file:</span><br><span class="line">      - .env</span><br><span class="line">    volumes:</span><br><span class="line">      - ./data:/app/data</span><br><span class="line">    networks:</span><br><span class="line">      - rss-bot-network</span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  rss-bot-network:</span><br><span class="line">    driver: bridge</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-启动服务"><a href="#5-启动服务" class="headerlink" title="5. 启动服务"></a>5. 启动服务</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 构建并启动</span><br><span class="line">docker-compose up -d --build</span><br><span class="line"></span><br><span class="line"># 查看状态</span><br><span class="line">docker-compose ps</span><br><span class="line"></span><br><span class="line"># 查看日志</span><br><span class="line">docker-compose logs -f</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="🔑-关键字过滤使用指南"><a href="#🔑-关键字过滤使用指南" class="headerlink" title="🔑 关键字过滤使用指南"></a>🔑 关键字过滤使用指南</h2><h3 id="基本命令流程："><a href="#基本命令流程：" class="headerlink" title="基本命令流程："></a>基本命令流程：</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 1. 添加订阅</span><br><span class="line">/sub https://rsshub.app/bilibili/user/dynamic/344849788</span><br><span class="line"></span><br><span class="line"># 2. 查看订阅ID</span><br><span class="line">/list</span><br><span class="line"></span><br><span class="line"># 3. 设置关键字过滤 (假设订阅ID为1)</span><br><span class="line">/set 1 --include 科技,AI,编程</span><br><span class="line">/set 1 --exclude 广告,直播,抽奖</span><br><span class="line"></span><br><span class="line"># 4. 查看设置</span><br><span class="line">/set 1</span><br><span class="line"></span><br><span class="line"># 5. 清除过滤</span><br><span class="line">/set 1 --clear</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="常用RSS源示例："><a href="#常用RSS源示例：" class="headerlink" title="常用RSS源示例："></a>常用RSS源示例：</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># B站UP主</span><br><span class="line">/sub https://rsshub.app/bilibili/user/dynamic/用户ID</span><br><span class="line"></span><br><span class="line"># 知乎热榜</span><br><span class="line">/sub https://rsshub.app/zhihu/hotlist</span><br><span class="line"></span><br><span class="line"># GitHub趋势</span><br><span class="line">/sub https://rsshub.app/github/trending</span><br><span class="line"></span><br><span class="line"># 微博用户</span><br><span class="line">/sub https://rsshub.app/weibo/user/用户ID</span><br><span class="line"></span><br><span class="line"># 新闻网站</span><br><span class="line">/sub https://rsshub.app/reuters/world</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="🛠-维护命令"><a href="#🛠-维护命令" class="headerlink" title="🛠 维护命令"></a>🛠 维护命令</h2><h3 id="服务管理："><a href="#服务管理：" class="headerlink" title="服务管理："></a>服务管理：</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 停止服务</span><br><span class="line">docker-compose down</span><br><span class="line"></span><br><span class="line"># 重启服务</span><br><span class="line">docker-compose restart</span><br><span class="line"></span><br><span class="line"># 更新服务（重新拉取最新代码后）</span><br><span class="line">docker-compose down</span><br><span class="line">docker-compose up -d --build</span><br><span class="line"></span><br><span class="line"># 备份数据</span><br><span class="line">cp -r data data_backup_$(date +%Y%m%d)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="日志查看："><a href="#日志查看：" class="headerlink" title="日志查看："></a>日志查看：</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 实时日志</span><br><span class="line">docker-compose logs -f</span><br><span class="line"></span><br><span class="line"># 最近100行日志</span><br><span class="line">docker-compose logs --tail=100</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="📝-故障排除"><a href="#📝-故障排除" class="headerlink" title="📝 故障排除"></a>📝 故障排除</h2><h3 id="1-Bot-Token无效"><a href="#1-Bot-Token无效" class="headerlink" title="1. Bot Token无效"></a>1. Bot Token无效</h3><ul>
+<li>重新在 @BotFather 创建新的Bot</li>
+<li>更新 .env 文件中的 BOT_TOKEN</li>
+<li>重启服务：<code>docker-compose restart</code></li>
+</ul>
+<h3 id="2-容器启动失败"><a href="#2-容器启动失败" class="headerlink" title="2. 容器启动失败"></a>2. 容器启动失败</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 检查Docker服务</span><br><span class="line">docker --version</span><br><span class="line">docker-compose --version</span><br><span class="line"></span><br><span class="line"># 重新构建</span><br><span class="line">docker-compose down</span><br><span class="line">docker-compose up -d --build</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-数据库问题"><a href="#3-数据库问题" class="headerlink" title="3. 数据库问题"></a>3. 数据库问题</h3><p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 重置数据库（会丢失所有数据）</span><br><span class="line">docker-compose down</span><br><span class="line">rm -rf data</span><br><span class="line">mkdir data</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="💡-使用技巧"><a href="#💡-使用技巧" class="headerlink" title="💡 使用技巧"></a>💡 使用技巧</h2><ol>
+<li><strong>测试订阅</strong>：先用小的、活跃的RSS源测试</li>
+<li><strong>关键字策略</strong>：开始时关键词不要太严格，逐步调整</li>
+<li><strong>监控日志</strong>：定期查看日志了解推送状态</li>
+<li><strong>备份配置</strong>：定期备份 <code>data</code> 目录</li>
+</ol>
+<p>这个方案包含了从零开始部署到日常使用的所有步骤，下次部署时直接按照这个文档操作即可</p>
+
+    </div>
+</article>
+        </main>
+        <footer class="footer">
+    <div id="timeDate">载入天数...</div>
+    <p>
+        | &copy; 2025 G.Ark | 
+        <a href="/archives">归档</a>
+    </p>
+</footer>
+
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("2025-11-02 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        document.getElementById("timeDate").innerHTML = "稳定运行 "+dnum+" 天";
+    }
+    setInterval("createtime()",250);
+</script>
+    </div>
+    
+<script src="/js/main.js"></script>
+
+</body>
+</html>

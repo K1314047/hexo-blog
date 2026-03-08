@@ -1,0 +1,73 @@
+<!-- 搜索框 -->
+<div class="search-container">
+    <form id="search-form">
+        <input type="text" name="search" id="search-input" placeholder="输入关键词自动搜索..." autocomplete="off">
+        <button type="button" id="clear-search" style="display: none;">清除</button>
+    </form>
+    <div id="search-result-info"></div>
+</div>
+
+<!-- 日记列表 -->
+<div class="diaries-container" id="diaries-container">
+    <% if (page.posts && page.posts.length > 0) { %>
+        <% 
+            const postsByDate = {};
+            page.posts.data.forEach(function(post) {
+                const date = post.date.format('YYYY年MM月DD日');
+                if (!postsByDate[date]) {
+                    postsByDate[date] = [];
+                }
+                postsByDate[date].push(post);
+            });
+        %>
+        
+        <% Object.keys(postsByDate).forEach(function(date) { %>
+            <div class="date-section">
+                <div class="date-header">
+                    📅 <%= date %>
+                </div>
+                <div class="diaries-list">
+                    <% postsByDate[date].forEach(function(post) { %>
+                        <article class="diary-item" data-title="<%= post.title %>">
+                            <a href="<%= url_for(post.path) %>" class="diary-item-link">
+                                <div class="diary-item-title"><%= post.title %></div>
+                                <div class="diary-item-preview">
+                                    <%= post.excerpt || strip_html(post.content).substring(0, 100) + '...' %>
+                                </div>
+                                <div class="diary-item-meta">
+                                    <span class="diary-item-author">✍️ 作者：<%= post.author || config.author %></span>
+                                    <span class="diary-item-time">🕐 <%= post.date.format('YYYY-MM-DD') %></span>
+                                    <span class="diary-item-word-count">📝 <%= post.wordCount || '0' %> 字</span>
+                                </div>
+                            </a>
+                        </article>
+                    <% }); %>
+                </div>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <div class="empty-state">
+            <h2>暂无内容</h2>
+            <p>还没有发布任何日记</p>
+        </div>
+    <% } %>
+</div>
+
+<!-- 简化分页 -->
+<% if (page.total > 1) { %>
+    <div class="pagination">
+        <% if (page.prev) { %>
+            <a href="<%= url_for(page.prev_link) %>" class="prev">‹ 上一页</a>
+        <% } else { %>
+            <span class="prev disabled">‹ 上一页</span>
+        <% } %>
+        
+        <span class="page-info">第 <%= page.current %> 页 / 共 <%= page.total %> 页</span>
+        
+        <% if (page.next) { %>
+            <a href="<%= url_for(page.next_link) %>" class="next">下一页 ›</a>
+        <% } else { %>
+            <span class="next disabled">下一页 ›</span>
+        <% } %>
+    </div>
+<% } %>

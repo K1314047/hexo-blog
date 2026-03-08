@@ -1,0 +1,17 @@
+name: "Ws01 Note"
+description: "记录分享生活中的美好和经验"
+author: "Ws01"
+version: "1.0.0"
+
+menu:
+  首页: /
+  归档: /archives
+  标签: /tags
+  分类: /categories
+
+search:
+  enable: true
+
+footer:
+  since: 2025
+  show_runtime: true

@@ -1,0 +1,17 @@
+<div class="archive-container">
+    <div class="archive-header">
+        <h1>📚 文章归档</h1>
+    </div>
+    
+    <% page.posts.each(function(post) { %>
+        <article class="archive-item">
+            <a href="<%= url_for(post.path) %>" class="archive-link">
+                <div class="archive-title"><%= post.title %></div>
+                <div class="archive-meta">
+                    <span class="archive-date">📅 <%= post.date.format('YYYY-MM-DD') %></span>
+                    <span class="archive-wordcount">📝 <%= post.wordCount || '0' %> 字</span>
+                </div>
+            </a>
+        </article>
+    <% }); %>
+</div>

@@ -1,0 +1,198 @@
+---
+title: 'OKX Boost X Launch 监控脚本部署教程'
+---
+
+### **项目简介**
+
+监控 OKX Boost X Launch 项目，在参与时间和领取时间到点时自动发送 Telegram 通知。
+
+**项目地址：** https://github.com/kuzicode/okx-boost-alert
+
+------
+
+### **快速部署指南**
+
+#### **第一步：准备环境**
+
+1. **安装 Python 3.8+**
+   1. 访问 [python.org](https://www.python.org/downloads/)
+   2. 下载安装包，安装时务必勾选 **"Add Python to PATH"**
+
+1. **下载项目代码**
+   
+   ```
+   `# 方法1：使用 Git（推荐） 
+   git clone https://github.com/kuzicode/okx-boost-alert.git 
+   cd okx-boost-alert 
+   `# 方法2：手动下载# 从 GitHub 下载 ZIP 压缩包，解压到任意目录`
+   ```
+
+#### **第二步：安装依赖**
+
+bash
+
+```plain
+# 1. 创建虚拟环境
+python -m venv venv
+
+# 2. 激活虚拟环境# 方式A：PowerShell用户
+.\venv\Scripts\Activate.ps1
+# 如果提示权限错误，先执行：
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 方式B：CMD用户
+venv\Scripts\activate
+
+# 3. 安装项目依赖
+pip install -r requirements.txt
+
+# 4. 安装 Playwright 浏览器
+playwright install chromium
+```
+
+#### **第三步：配置参数**
+
+bash
+
+```plain
+# 1. 复制配置文件
+copy .env.example .env
+
+# 2. 编辑配置文件# 右键点击 .env 文件 → 打开方式 → 选择记事本# 填入以下必要信息：# TELEGRAM_BOT_TOKEN=你的机器人Token# TELEGRAM_CHAT_ID=你的群组/频道ID
+```
+
+**配置文件说明：**
+
+text
+
+```plain
+TELEGRAM_BOT_TOKEN=你的Bot Token（从 @BotFather 获取）
+TELEGRAM_CHAT_ID=群组/频道ID（如 -1001234567890）
+TELEGRAM_TOPIC_ID=话题ID（可选，用于群组话题）
+CHECK_INTERVAL_MINUTES=5  # 检查间隔（分钟）
+```
+
+#### **第四步：测试运行**
+
+bash
+
+```plain
+python monitor.py
+```
+
+首次运行会打开浏览器进行测试，看到成功提示信息即可。
+
+------
+
+### **Windows 开机自启动设置**
+
+#### **VBS脚本 + 启动文件夹（推荐）**
+
+**步骤1：创建启动脚本**
+
+1. 在项目文件夹内新建文本文件
+
+1. 重命名为 `start_monitor.vbs`
+
+1. 右键 → 编辑，粘贴以下代码：
+
+vbscript
+
+```plain
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set ws = CreateObject("WScript.Shell")
+
+' 获取VBS文件所在的目录（即项目目录）
+scriptPath = fso.GetParentFolderName(WScript.ScriptFullName)
+ws.CurrentDirectory = scriptPath
+
+' 直接使用虚拟环境中的Python，避免激活问题
+pythonPath = scriptPath & "\venv\Scripts\python.exe"
+scriptFile = scriptPath & "\monitor.py"
+
+' 隐藏窗口运行（0=隐藏，1=显示）
+ws.Run "cmd /c """ & pythonPath & """ """ & scriptFile & """", 0
+
+' 可选：启动提示（调试完成后可删除）
+' MsgBox "OKX Boost监控已启动！", vbInformation, "启动成功"
+```
+
+**步骤2：设置开机自启动**
+
+1. 按 `Win + R` 键
+
+1. 输入 `shell:startup`，回车
+
+1. 将 `start_monitor.vbs` 文件复制到此文件夹
+
+1. 重启电脑测试效果
+
+### **验证与监控**
+
+------
+
+#### **检查是否运行成功**
+
+1. **查看进程**：`Ctrl + Shift + Esc` → 进程 → 查找 `python.exe`
+
+1. **查看日志**：项目文件夹会生成运行日志
+
+1. **测试通知**：修改测试时间触发通知
+
+#### **停止监控**
+
+bash
+
+```plain
+# 方法1：任务管理器结束进程
+Ctrl + Shift + Esc → 找到 python.exe → 结束任务
+
+# 方法2：命令行停止
+taskkill /f /im python.exe
+
+# 方法3：删除启动项
+删除启动文件夹中的 VBS 文件
+```
+
+#### **更新项目**
+
+bash
+
+```plain
+# 1. 停止当前监控
+taskkill /f /im python.exe
+
+# 2. 拉取最新代码git pull origin main
+
+# 3. 重新安装依赖（如有更新）
+pip install -r requirements.txt
+
+# 4. 重新启动
+python monitor.py
+```
+
+------
+
+### **常见问题解决**
+
+| **问题**        | **解决方法**                        |
+| --------------- | ----------------------------------- |
+| 无法导入模块    | 确认虚拟环境已激活，重新安装依赖    |
+| Playwright 报错 | 运行 `playwright install chromium`  |
+| Telegram 无通知 | 检查 `.env` 配置是否正确            |
+| 开机不启动      | 检查启动文件夹路径，确认VBS脚本位置 |
+| 权限不足        | 以管理员身份运行 CMD/PowerShell     |
+
+------
+
+### **注意事项**
+
+1. 确保网络可以正常访问 OKX 和 Telegram
+
+1. 定期检查脚本更新，获取最新功能
+
+1. 重要活动建议提前手动验证
+
+1. 保持电脑不休眠（修改电源设置）
+
+按照以上步骤操作，你的监控脚本将在 Windows 10/11 上稳定运行，实现 24 小时自动监控和通知！
