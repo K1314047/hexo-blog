@@ -1,0 +1,17 @@
+<div class="archive-container card-panel taxonomy-page">
+    <div class="archive-header page-header">
+        <h1>标签</h1>
+        <p>按主题快速浏览文章</p>
+    </div>
+    <% if (site.tags && site.tags.length) { %>
+        <div class="taxonomy-cloud">
+            <% site.tags.sort('name').each(function(tag) { %>
+                <a class="tag-chip large" href="<%= url_for(tag.path) %>"><%= tag.name %> <span><%= tag.length %></span></a>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <h2>暂无标签</h2>
+        </div>
+    <% } %>
+</div>

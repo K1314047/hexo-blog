@@ -1,17 +1,69 @@
-<article class="post">
+<%
+function stripText(html) {
+  return String(html || '')
+    .replace(/<pre[\s\S]*?<\/pre>/gi, ' ')
+    .replace(/<code[\s\S]*?<\/code>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&[a-zA-Z0-9#]+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function resolveWordCount(post) {
+  const candidates = [post.wordCount, post.wordcount, post.symbolsCount, post.symbolscount, post.totalcount];
+  for (let i = 0; i < candidates.length; i++) {
+    const val = Number(candidates[i]);
+    if (!isNaN(val) && val > 0) return Math.round(val);
+  }
+  const text = stripText(post.content || post.excerpt || '');
+  if (!text) return 0;
+  const cn = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const en = text.replace(/[\u4e00-\u9fa5]/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+  return cn + en;
+}
+function resolveReadTime(post) {
+  const candidates = [post.min2read, post.min2Read, post.reading_time, post.readingTime];
+  for (let i = 0; i < candidates.length; i++) {
+    const val = Number(candidates[i]);
+    if (!isNaN(val) && val > 0) return Math.max(1, Math.round(val));
+  }
+  return Math.max(1, Math.ceil(resolveWordCount(post) / 300));
+}
+const wc = resolveWordCount(page);
+const rt = resolveReadTime(page);
+const headingCount = (String(page.content || '').match(/<h[1-6][^>]*>/g) || []).length;
+%>
+<article class="post card-panel">
     <header class="post-header">
         <h1 class="post-title"><%= page.title %></h1>
         <div class="post-meta">
-            <span class="post-time">📅 <%= page.date.format('YYYY年MM月DD日') %></span>
+            <span>发布：<%= page.date.format('YYYY年MM月DD日') %></span>
+            <span>字数：<%= wc %></span>
+            <span>阅读：<%= rt %> 分钟</span>
             <% if (page.categories && page.categories.length) { %>
-                <span class="post-category">📁 
-                    <% page.categories.each(function(category) { %>
-                        <a href="<%= url_for(category.path) %>"><%= category.name %></a>
+                <span class="post-category-list">
+                    分类：
+                    <% page.categories.each(function(category, index) { %>
+                        <a class="meta-link" href="<%= url_for(category.path) %>"><%= category.name %></a><%= index < page.categories.length - 1 ? ' / ' : '' %>
                     <% }); %>
                 </span>
             <% } %>
         </div>
+        <% if (page.tags && page.tags.length) { %>
+            <div class="post-tags">
+                <% page.tags.each(function(tag) { %>
+                    <a class="tag-chip" href="<%= url_for(tag.path) %>"># <%= tag.name %></a>
+                <% }); %>
+            </div>
+        <% } %>
     </header>
+
+    <% if (headingCount > 1) { %>
+        <aside class="post-toc card-subpanel">
+            <div class="toc-title">文章目录</div>
+            <%- toc(page.content, { class: 'toc-list', list_number: false, max_depth: 3 }) %>
+        </aside>
+    <% } %>
     
     <div class="post-content">
         <%- page.content %>

@@ -1,0 +1,23 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= page.title ? page.title + ' | ' + config.title : config.title %></title>
+<meta name="description" content="<%= config.description || '' %>">
+<link rel="icon" href="<%= theme.favicon || '/favicon.ico' %>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<%= url_for('/css/style.css') %>">
+<% (theme.custom_styles || []).forEach(function(style){ %>
+<link rel="stylesheet" href="<%= url_for(style) %>">
+<% }) %>
+<script>
+  window.NOTION_INK_CONFIG = {
+    root: <%- JSON.stringify(config.root || '/') %>,
+    searchPath: <%- JSON.stringify((config.root || '/') + 'search.json') %>,
+    emptyText: <%- JSON.stringify((theme.search && theme.search.empty_text) || '没有找到相关内容') %>
+  };
+</script>
+<script defer src="<%= url_for('/js/search.js') %>"></script>
+<% (theme.custom_scripts || []).forEach(function(script){ %>
+<script defer src="<%= url_for(script) %>"></script>
+<% }) %>

@@ -1,11 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 搜索功能
     const searchInput = document.getElementById('search-input');
     const clearBtn = document.getElementById('clear-search');
     const diariesContainer = document.getElementById('diaries-container');
     const searchResultInfo = document.getElementById('search-result-info');
+    const themeToggle = document.getElementById('theme-toggle');
+    const storageKey = 'ws01-note-theme';
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (themeToggle) themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+
+    const preferredTheme = localStorage.getItem(storageKey) || 'light';
+    applyTheme(preferredTheme);
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            const nextTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            localStorage.setItem(storageKey, nextTheme);
+            applyTheme(nextTheme);
+        });
+    }
     
-    if (searchInput) {
+    if (searchInput && diariesContainer) {
         let searchTimeout;
         
         function debounce(func, wait) {
@@ -17,46 +34,28 @@ document.addEventListener('DOMContentLoaded', function() {
         
         function performSearch() {
             const keyword = searchInput.value.trim().toLowerCase();
-            
-            if (keyword) {
-                clearBtn.style.display = 'block';
-            } else {
-                clearBtn.style.display = 'none';
-            }
-            
+            if (clearBtn) clearBtn.style.display = keyword ? 'block' : 'none';
             if (!keyword) {
                 showAllItems();
-                searchResultInfo.innerHTML = '';
+                if (searchResultInfo) searchResultInfo.innerHTML = '';
                 return;
             }
-            
             filterItems(keyword);
         }
         
         function showAllItems() {
-            const dateSections = diariesContainer.querySelectorAll('.date-section');
-            dateSections.forEach(section => {
-                section.classList.remove('hidden-section');
-            });
-            
-            const items = diariesContainer.querySelectorAll('.diary-item');
-            items.forEach(item => {
-                item.classList.remove('hidden');
-            });
+            diariesContainer.querySelectorAll('.date-section').forEach(section => section.classList.remove('hidden-section'));
+            diariesContainer.querySelectorAll('.diary-item').forEach(item => item.classList.remove('hidden'));
         }
         
         function filterItems(keyword) {
             let matchCount = 0;
-            const dateSections = diariesContainer.querySelectorAll('.date-section');
-            
-            dateSections.forEach(section => {
+            diariesContainer.querySelectorAll('.date-section').forEach(section => {
                 const items = section.querySelectorAll('.diary-item');
                 let sectionHasMatch = false;
-                
                 items.forEach(item => {
                     const title = item.getAttribute('data-title') || '';
                     const preview = item.querySelector('.diary-item-preview')?.textContent || '';
-                    
                     if (title.toLowerCase().includes(keyword) || preview.toLowerCase().includes(keyword)) {
                         item.classList.remove('hidden');
                         sectionHasMatch = true;
@@ -65,26 +64,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.classList.add('hidden');
                     }
                 });
-                
-                if (sectionHasMatch) {
-                    section.classList.remove('hidden-section');
-                } else {
-                    section.classList.add('hidden-section');
-                }
+                section.classList.toggle('hidden-section', !sectionHasMatch);
             });
-            
-            if (matchCount > 0) {
-                searchResultInfo.innerHTML = 
-                    `搜索"<strong>${escapeHtml(keyword)}</strong>"，找到 <strong>${matchCount}</strong> 篇日记`;
-            } else {
-                searchResultInfo.innerHTML = 
-                    `没有找到包含"<strong>${escapeHtml(keyword)}</strong>"的日记`;
+
+            if (searchResultInfo) {
+                searchResultInfo.innerHTML = matchCount > 0
+                    ? `搜索“<strong>${escapeHtml(keyword)}</strong>”，找到 <strong>${matchCount}</strong> 篇文章`
+                    : `没有找到包含“<strong>${escapeHtml(keyword)}</strong>”的文章`;
             }
         }
         
         function clearSearch() {
             searchInput.value = '';
-            clearBtn.style.display = 'none';
+            if (clearBtn) clearBtn.style.display = 'none';
             performSearch();
         }
         
@@ -95,6 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         searchInput.addEventListener('input', debounce(performSearch, 300));
-        clearBtn.addEventListener('click', clearSearch);
+        if (clearBtn) clearBtn.addEventListener('click', clearSearch);
     }
 });

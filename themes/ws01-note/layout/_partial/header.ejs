@@ -1,6 +1,11 @@
 <div class="header">
-    <h1>💻 <%= config.title %></h1>
-    <p><%= config.description %></p>
+    <div class="header-topbar">
+        <div>
+            <h1><%= config.title %></h1>
+            <p><%= config.description %></p>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换深色模式">🌙</button>
+    </div>
     <nav class="main-nav">
         <a href="/" class="nav-link">首页</a>
         <a href="/archives" class="nav-link">归档</a>

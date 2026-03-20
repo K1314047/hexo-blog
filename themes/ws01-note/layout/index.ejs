@@ -1,5 +1,37 @@
-<!-- 搜索框 -->
-<div class="search-container">
+<%
+function stripText(html) {
+  return String(html || '')
+    .replace(/<pre[\s\S]*?<\/pre>/gi, ' ')
+    .replace(/<code[\s\S]*?<\/code>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&[a-zA-Z0-9#]+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function resolveWordCount(post) {
+  const candidates = [post.wordCount, post.wordcount, post.symbolsCount, post.symbolscount, post.totalcount];
+  for (let i = 0; i < candidates.length; i++) {
+    const val = Number(candidates[i]);
+    if (!isNaN(val) && val > 0) return Math.round(val);
+  }
+  const text = stripText(post.content || post.excerpt || '');
+  if (!text) return 0;
+  const cn = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const en = text.replace(/[\u4e00-\u9fa5]/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+  return cn + en;
+}
+function resolveReadTime(post) {
+  const candidates = [post.min2read, post.min2Read, post.reading_time, post.readingTime];
+  for (let i = 0; i < candidates.length; i++) {
+    const val = Number(candidates[i]);
+    if (!isNaN(val) && val > 0) return Math.max(1, Math.round(val));
+  }
+  return Math.max(1, Math.ceil(resolveWordCount(post) / 300));
+}
+%>
+
+<div class="search-container card-panel">
     <form id="search-form">
         <input type="text" name="search" id="search-input" placeholder="输入关键词自动搜索..." autocomplete="off">
         <button type="button" id="clear-search" style="display: none;">清除</button>
@@ -7,67 +39,66 @@
     <div id="search-result-info"></div>
 </div>
 
-<!-- 日记列表 -->
 <div class="diaries-container" id="diaries-container">
     <% if (page.posts && page.posts.length > 0) { %>
         <% 
             const postsByDate = {};
             page.posts.data.forEach(function(post) {
                 const date = post.date.format('YYYY年MM月DD日');
-                if (!postsByDate[date]) {
-                    postsByDate[date] = [];
-                }
+                if (!postsByDate[date]) postsByDate[date] = [];
                 postsByDate[date].push(post);
             });
         %>
         
         <% Object.keys(postsByDate).forEach(function(date) { %>
-            <div class="date-section">
-                <div class="date-header">
-                    📅 <%= date %>
-                </div>
+            <section class="date-section card-panel">
+                <div class="date-header"><span class="meta-icon">📅</span><%= date %></div>
                 <div class="diaries-list">
                     <% postsByDate[date].forEach(function(post) { %>
+                        <% const wc = resolveWordCount(post); const rt = resolveReadTime(post); %>
                         <article class="diary-item" data-title="<%= post.title %>">
                             <a href="<%= url_for(post.path) %>" class="diary-item-link">
                                 <div class="diary-item-title"><%= post.title %></div>
-                                <div class="diary-item-preview">
-                                    <%= post.excerpt || strip_html(post.content).substring(0, 100) + '...' %>
-                                </div>
+                                <div class="diary-item-preview"><%= post.excerpt || strip_html(post.content).substring(0, 100) + '...' %></div>
                                 <div class="diary-item-meta">
-                                    <span class="diary-item-author">✍️ 作者：<%= post.author || config.author %></span>
-                                    <span class="diary-item-time">🕐 <%= post.date.format('YYYY-MM-DD') %></span>
-                                    <span class="diary-item-word-count">📝 <%= post.wordCount || '0' %> 字</span>
+                                    <span class="diary-item-author">作者：<%= post.author || config.author %></span>
+                                    <span class="diary-item-time">发布：<%= post.date.format('YYYY-MM-DD') %></span>
+                                    <span class="diary-item-word-count">字数：<%= wc %></span>
+                                    <span class="diary-item-reading-time">阅读：<%= rt %> 分钟</span>
+                                    <% if (post.tags && post.tags.length) { %>
+                                        <span class="meta-tags inline-tags">
+                                            <% post.tags.each(function(tag) { %>
+                                                <span class="tag-chip"><%= tag.name %></span>
+                                            <% }); %>
+                                        </span>
+                                    <% } %>
                                 </div>
                             </a>
                         </article>
                     <% }); %>
                 </div>
-            </div>
+            </section>
         <% }); %>
     <% } else { %>
-        <div class="empty-state">
+        <div class="empty-state card-panel">
             <h2>暂无内容</h2>
             <p>还没有发布任何日记</p>
         </div>
     <% } %>
 </div>
 
-<!-- 简化分页 -->
 <% if (page.total > 1) { %>
-    <div class="pagination">
+    <nav class="pagination">
         <% if (page.prev) { %>
             <a href="<%= url_for(page.prev_link) %>" class="prev">‹ 上一页</a>
         <% } else { %>
             <span class="prev disabled">‹ 上一页</span>
         <% } %>
-        
         <span class="page-info">第 <%= page.current %> 页 / 共 <%= page.total %> 页</span>
-        
         <% if (page.next) { %>
             <a href="<%= url_for(page.next_link) %>" class="next">下一页 ›</a>
         <% } else { %>
             <span class="next disabled">下一页 ›</span>
         <% } %>
-    </div>
+    </nav>
 <% } %>

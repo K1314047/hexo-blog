@@ -1,0 +1,208 @@
+<%
+  const themeConfig = (config && config.theme_config) ? config.theme_config : {};
+  const latestCount = themeConfig.latest_count || 5;
+  const posts = site.posts.sort('updated', -1).limit(latestCount);
+  const searchPath = themeConfig.search_path || 'search.json';
+  const placeholder = themeConfig.search_placeholder || '搜索一下';
+  const searchButtonText = themeConfig.search_button_text || '搜索';
+  const latestTitle = themeConfig.latest_title || '最新发布';
+  const emptyText = themeConfig.empty_text || '暂无内容';
+%>
+
+<section class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-title"><%= config.title %></h1>
+
+    <div class="search-wrap">
+      <form class="search-form" onsubmit="return false;">
+        <input
+          id="notion-ink-search-input"
+          class="search-input"
+          type="text"
+          placeholder="<%= placeholder %>"
+          autocomplete="off"
+        />
+        <button id="notion-ink-search-btn" class="search-btn" type="button">
+          <%= searchButtonText %>
+        </button>
+      </form>
+    </div>
+
+    <div id="notion-ink-search-result" class="search-result" style="display:none;">
+      <div id="notion-ink-search-stats" class="search-stats"></div>
+      <div id="notion-ink-search-list" class="search-list"></div>
+    </div>
+  </div>
+</section>
+
+<section class="latest-section">
+  <div class="section-head">
+    <h2><%= latestTitle %></h2>
+  </div>
+
+  <% if (posts && posts.length) { %>
+    <div class="latest-row">
+      <% posts.each(function(post){ %>
+        <article class="post-card">
+          <a class="post-card-link" href="<%- url_for(post.path) %>">
+            <div class="post-card-cover">
+              <% if (post.cover) { %>
+                <img src="<%- url_for(post.cover) %>" alt="<%= post.title %>">
+              <% } else { %>
+                <div class="post-card-cover-fallback">
+                  <span><%= post.title ? post.title.charAt(0) : 'P' %></span>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="post-card-body">
+              <h3 class="post-card-title"><%= post.title || 'Untitled' %></h3>
+
+              <% if (post.updated) { %>
+                <p class="post-card-meta">
+                  更新于 <%= date(post.updated, 'YYYY-MM-DD') %>
+                </p>
+              <% } else if (post.date) { %>
+                <p class="post-card-meta">
+                  发布于 <%= date(post.date, 'YYYY-MM-DD') %>
+                </p>
+              <% } %>
+
+              <% if (post.excerpt && post.excerpt.length) { %>
+                <div class="post-card-excerpt">
+                  <%- post.excerpt.replace(/<[^>]+>/g, '').slice(0, 80) %>
+                </div>
+              <% } else if (post.content && post.content.length) { %>
+                <div class="post-card-excerpt">
+                  <%- post.content.replace(/<[^>]+>/g, '').slice(0, 80) %>
+                </div>
+              <% } %>
+            </div>
+          </a>
+        </article>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty-block"><%= emptyText %></div>
+  <% } %>
+</section>
+
+<script>
+  (function () {
+    var input = document.getElementById('notion-ink-search-input');
+    var button = document.getElementById('notion-ink-search-btn');
+    var resultBox = document.getElementById('notion-ink-search-result');
+    var stats = document.getElementById('notion-ink-search-stats');
+    var list = document.getElementById('notion-ink-search-list');
+    var searchIndex = [];
+    var loaded = false;
+
+    function stripHTML(html) {
+      return (html || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function escapeHTML(str) {
+      return (str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function normalizeText(str) {
+      return (str || '').toLowerCase().trim();
+    }
+
+    function renderResults(items, keyword) {
+      if (!keyword) {
+        resultBox.style.display = 'none';
+        stats.innerHTML = '';
+        list.innerHTML = '';
+        return;
+      }
+
+      resultBox.style.display = 'block';
+      stats.innerHTML = '找到 ' + items.length + ' 条与 “' + escapeHTML(keyword) + '” 相关的内容';
+
+      if (!items.length) {
+        list.innerHTML = '<div class="search-empty">没有找到相关内容</div>';
+        return;
+      }
+
+      list.innerHTML = items.map(function (item) {
+        var title = escapeHTML(item.title || 'Untitled');
+        var content = escapeHTML(stripHTML(item.content).slice(0, 140));
+        var link = item.path || '#';
+        return (
+          '<article class="search-item">' +
+            '<a href="' + link + '">' +
+              '<h3>' + title + '</h3>' +
+              '<p>' + content + '</p>' +
+            '</a>' +
+          '</article>'
+        );
+      }).join('');
+    }
+
+    function performSearch() {
+      var keyword = normalizeText(input.value);
+
+      if (!keyword) {
+        renderResults([], '');
+        return;
+      }
+
+      var keywords = keyword.split(/\s+/).filter(Boolean);
+
+      var matched = searchIndex.filter(function (item) {
+        var title = normalizeText(item.title);
+        var content = normalizeText(stripHTML(item.content));
+        var text = title + ' ' + content;
+
+        return keywords.every(function (word) {
+          return text.indexOf(word) > -1;
+        });
+      });
+
+      renderResults(matched, keyword);
+    }
+
+    function loadSearch() {
+      if (loaded) return Promise.resolve(searchIndex);
+
+      return fetch('<%- url_for(searchPath) %>')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          searchIndex = Array.isArray(data) ? data : [];
+          loaded = true;
+          return searchIndex;
+        })
+        .catch(function () {
+          loaded = true;
+          searchIndex = [];
+          return searchIndex;
+        });
+    }
+
+    if (button) {
+      button.addEventListener('click', function () {
+        loadSearch().then(performSearch);
+      });
+    }
+
+    if (input) {
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          loadSearch().then(performSearch);
+        }
+      });
+
+      input.addEventListener('input', function () {
+        if (!input.value.trim()) {
+          renderResults([], '');
+        }
+      });
+    }
+  })();
+</script>

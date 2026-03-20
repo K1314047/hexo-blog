@@ -1,19 +1,17 @@
-<footer class="footer">
+<footer class="footer card-panel footer-panel">
     <div id="timeDate">载入天数...</div>
-    <p>
-        | &copy; 2025 <%= config.author %> | 
-        <a href="/archives">归档</a>
-    </p>
+    <p>| &copy; 2025 <%= config.author %> | <a href="/archives">归档</a></p>
 </footer>
 
 <script>
     var now = new Date();
     function createtime() {
-        var grt= new Date("2025-11-02 00:00:00");
-        now.setTime(now.getTime()+250);
-        days = (now - grt) / 1000 / 60 / 60 / 24;
-        dnum = Math.floor(days);
-        document.getElementById("timeDate").innerHTML = "稳定运行 "+dnum+" 天";
+        var grt = new Date('2025-01-01 00:00:00');
+        now.setTime(now.getTime() + 250);
+        var days = (now - grt) / 1000 / 60 / 60 / 24;
+        var dnum = Math.floor(days);
+        document.getElementById('timeDate').innerHTML = '已持续记录 ' + dnum + ' 天';
     }
-    setInterval("createtime()",250);
+    setInterval(createtime, 250);
+    createtime();
 </script>

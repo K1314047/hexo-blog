@@ -1,0 +1,9 @@
+{
+  "name": "hexo-theme-notion-ink",
+  "version": "1.0.0",
+  "description": "A clean black-and-white Notion-inspired Hexo theme with homepage search and latest updates carousel.",
+  "keywords": ["hexo", "theme", "notion", "search"],
+  "main": "index.js",
+  "author": "OpenAI",
+  "license": "MIT"
+}

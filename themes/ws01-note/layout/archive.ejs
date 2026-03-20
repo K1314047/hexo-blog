@@ -1,15 +1,50 @@
-<div class="archive-container">
-    <div class="archive-header">
-        <h1>📚 文章归档</h1>
+<%
+function stripText(html) {
+  return String(html || '')
+    .replace(/<pre[\s\S]*?<\/pre>/gi, ' ')
+    .replace(/<code[\s\S]*?<\/code>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&[a-zA-Z0-9#]+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function resolveWordCount(post) {
+  const candidates = [post.wordCount, post.wordcount, post.symbolsCount, post.symbolscount, post.totalcount];
+  for (let i = 0; i < candidates.length; i++) {
+    const val = Number(candidates[i]);
+    if (!isNaN(val) && val > 0) return Math.round(val);
+  }
+  const text = stripText(post.content || post.excerpt || '');
+  if (!text) return 0;
+  const cn = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const en = text.replace(/[\u4e00-\u9fa5]/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+  return cn + en;
+}
+function resolveReadTime(post) {
+  const candidates = [post.min2read, post.min2Read, post.reading_time, post.readingTime];
+  for (let i = 0; i < candidates.length; i++) {
+    const val = Number(candidates[i]);
+    if (!isNaN(val) && val > 0) return Math.max(1, Math.round(val));
+  }
+  return Math.max(1, Math.ceil(resolveWordCount(post) / 300));
+}
+%>
+<div class="archive-container card-panel">
+    <div class="archive-header page-header">
+        <h1>文章归档</h1>
+        <p>按时间浏览已发布内容</p>
     </div>
     
     <% page.posts.each(function(post) { %>
+        <% const wc = resolveWordCount(post); const rt = resolveReadTime(post); %>
         <article class="archive-item">
             <a href="<%= url_for(post.path) %>" class="archive-link">
                 <div class="archive-title"><%= post.title %></div>
                 <div class="archive-meta">
-                    <span class="archive-date">📅 <%= post.date.format('YYYY-MM-DD') %></span>
-                    <span class="archive-wordcount">📝 <%= post.wordCount || '0' %> 字</span>
+                    <span>发布：<%= post.date.format('YYYY-MM-DD') %></span>
+                    <span>字数：<%= wc %></span>
+                    <span>阅读：<%= rt %> 分钟</span>
                 </div>
             </a>
         </article>

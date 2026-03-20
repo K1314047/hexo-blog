@@ -1,0 +1,17 @@
+<div class="archive-container card-panel taxonomy-page">
+    <div class="archive-header page-header">
+        <h1>分类</h1>
+        <p>按栏目整理所有文章</p>
+    </div>
+    <% if (site.categories && site.categories.length) { %>
+        <div class="taxonomy-cloud category-cloud">
+            <% site.categories.sort('name').each(function(category) { %>
+                <a class="tag-chip large category-chip" href="<%= url_for(category.path) %>"><%= category.name %> <span><%= category.length %></span></a>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="empty-state">
+            <h2>暂无分类</h2>
+        </div>
+    <% } %>
+</div>

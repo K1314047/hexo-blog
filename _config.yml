@@ -88,9 +88,17 @@ deploy:
 # 主题设置
 theme: ws01-note
 
+theme_config:
+  latest_count: 5
+  search_path: search.json
+  search_placeholder: 搜索一下
+  search_button_text: 搜索
+  latest_title: 最新发布
+  empty_text: 暂无内容
+
 # 搜索插件配置
 search:
   path: search.xml
   field: post
-  format: html
-  limit: 10000
+  content: html
+  format: 10000
