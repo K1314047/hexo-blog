@@ -6,7 +6,7 @@ tags:
   - vps
   - 探针
 categories:
-  - 教程
+  - 技术笔记
 ---
 ## 背景说明
 

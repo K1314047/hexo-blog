@@ -1,7 +1,13 @@
 ---
-title: "撸空投多开安全起见谨慎使用指纹浏览器"
-date: 2026-01-27
-updated: 2026-01-27
+title: 撸空投多开安全起见谨慎使用指纹浏览器
+summary: 多个 Google / Facebook / Twitter 等账号互不干扰
+date: 2026-03-01
+tags:
+  - 撸毛
+  - 工具
+  - 多开
+categories:
+  - 币圈笔记
 ---
 ## **一、为什么要用多个独立 Chrome 实例（优点）**
 

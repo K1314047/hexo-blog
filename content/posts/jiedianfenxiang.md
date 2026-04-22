@@ -1,7 +1,13 @@
 ---
-title: "节点分享网站代码分享"
-date: 2026-01-26
-updated: 2026-01-26
+title: 节点分享网站代码
+summary: 科学上网节点分享代码
+date: 2025-08-01
+tags:
+  - 建站
+  - Vercel
+  - GitHub
+categories:
+  - 技术笔记
 ---
 
 ## **1. 项目结构**

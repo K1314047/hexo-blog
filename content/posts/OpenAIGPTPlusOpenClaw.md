@@ -6,7 +6,7 @@ tags:
   - ai
   - openclaw
 categories:
-  - 教程
+  - 技术笔记
 ---
 
 

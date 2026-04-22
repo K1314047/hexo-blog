@@ -1,7 +1,12 @@
 ---
 title: Telegram频道展示项目完整部署指南
-date: 2026-02-19
-updated: 2026-02-19
+summary: 利用Telegram频道展示做blog
+date: 2025-10-6
+tags:
+  - 建站
+  - telegram
+categories:
+  - 技术笔记
 ---
 ## **技术栈**
 

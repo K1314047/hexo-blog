@@ -1,7 +1,12 @@
 ---
-title: win10怎么查询电脑ip地址
-date: 2026-03-21
-updated: 2026-03-21
+title: 怎么查询电脑ip地址
+summary: WIN10系统查询电脑IP地址
+date: 2023-12-16
+tags:
+  - ip
+  - 查询
+categories:
+  - 技术笔记
 ---
 
 - 以通过调出运行工具，再CMD

@@ -1,7 +1,12 @@
 ---
 title: Twitter监控页部署教程前端放Vercel后端继续跑本机
-date: 2026-03-17
-updated: 2026-03-17
+summary: Twitter 监控页部署教程：前端放 Vercel，后端继续跑本机
+date: 2025-12-16
+tags:
+  - 建站
+  - twitter
+categories:
+  - 技术笔记
 ---
 # Twitter 监控页部署教程：前端放 Vercel，后端继续跑本机
 

@@ -1,12 +1,13 @@
 ---
-title: "玩客云部署Hexo通过cloudflare隧道实现公网访问"
-date: 2025-04-1
-updated: 2025-04-1
+title: 玩客云部署Hexo通过cloudflare隧道实现公网访问
+summary: 使用 Hexo 静态博客框架，通过 Cloudflare Tunnel 在内网 NAS 上部署，实现公网访问。
+date: 2026-04-06
+tags:
+  - 建站
+  - Cloudflare
+categories:
+  - 技术笔记
 ---
-## 📋 项目概述
-
-使用 Hexo 静态博客框架，通过 Cloudflare Tunnel 在内网 NAS 上部署，实现公网访问。
-
 ------
 
 ## 🛠️ 环境要求

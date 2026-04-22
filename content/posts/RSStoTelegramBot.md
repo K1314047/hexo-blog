@@ -1,7 +1,12 @@
 ---
 title: RSS-to-Telegram-Bot完整部署方案
-date: 2026-03-19
-updated: 2026-03-19
+summary: RSS订阅信息推送到Telegram bot
+date: 2025-11-6
+tags:
+  - rss
+  - telegram
+categories:
+  - 技术笔记
 ---
 ### 1. 系统要求
 

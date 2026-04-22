@@ -1,7 +1,14 @@
 ---
-title: "通过Github+Vercel搭建订阅youtube转播客网站"
-date: 2026-04-1
-updated: 2026-04-1
+title: 通过Github+Vercel搭建订阅youtube转播客网站
+summary: 从 0 到上线：我如何把一个 RSS 播客网站部署到 GitHub 和 Vercel
+date: 2026-04-18
+tags:
+  - 建站
+  - Vercel
+  - GitHub
+  - RSS
+categories:
+  - 技术笔记
 ---
 **从 0 到上线：我如何把一个 RSS 播客网站部署到 GitHub 和 Vercel**
 

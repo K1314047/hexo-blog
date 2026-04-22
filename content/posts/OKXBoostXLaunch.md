@@ -7,7 +7,7 @@ tags:
   - 监控
   - 脚本
 categories:
-  - 教程
+  - 币圈笔记
 ---
 **项目地址：** https://github.com/kuzicode/okx-boost-alert
 
