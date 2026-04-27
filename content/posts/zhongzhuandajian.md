@@ -81,8 +81,6 @@ https://github.com/Wei-Shaw/sub2api
 - 海外住宅 IP
 - 2核4G 起步
 - 稳定即可
-- ![[Pasted image 20260427214044.png]]
-
 ---
 
 ### DNS / CDN：Cloudflare
@@ -127,19 +125,16 @@ https://github.com/Wei-Shaw/sub2api
 sudo dnf install -y \  
 https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
 ```
-![[Pasted image 20260427214234.png]]
+
 ---
 
 ### 安装 PostgreSQL 16
 
 ```
 sudo dnf -qy module disable postgresql  
-
-```
-```
 sudo dnf install -y postgresql16-server postgresql16
-```
 
+```
 
 ---
 
@@ -147,12 +142,8 @@ sudo dnf install -y postgresql16-server postgresql16
 
 ```
 sudo /usr/pgsql-16/bin/postgresql-16-setup initdb  
-
-```
-```
 sudo systemctl enable postgresql-16 --now
 ```
----
 
 ### 设置数据库密码
 
@@ -201,14 +192,9 @@ sudo dnf install -y https://rpms.remirepo.net/enterprise/remi-release-9.rpm
 
 ```
 sudo dnf module reset redis -y  
-```
-```
 sudo dnf module enable redis:7 -y  
-```
-```
 sudo dnf install -y redis
 ```
-
 ---
 
 ### 启动 Redis
@@ -226,8 +212,7 @@ sudo systemctl enable redis --now
 https://github.com/Wei-Shaw/sub2api
 
 按照 README 中的部署命令执行。
-![[Pasted image 20260427214309.png]]
-![[Pasted image 20260427214322.png]]
+
 ---
 
 ## 安装完成后访问后台
@@ -255,23 +240,18 @@ http://你的服务器IP:8080
 默认本地 Redis：
 
 直接测试连接即可。
-![[Pasted image 20260427214359.png]]
 
 ---
 
 ### 设置管理员账号
 
 创建你的后台登录账户。
-![[Pasted image 20260427214413.png]]
-![[Pasted image 20260427214435.png]]
 
 ---
 
 ### 完成安装
 
 点击安装即可。
-![[Pasted image 20260427214504.png]]
-
 
 ---
 
@@ -301,7 +281,6 @@ Cloudflare 后台：
 |---|---|---|
 |A|@|VPS IP|
 |A|www|VPS IP|
-![[Pasted image 20260427214537.png]]
 
 ---
 
